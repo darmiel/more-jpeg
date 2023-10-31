@@ -34,7 +34,7 @@ def upload():
     except:
         return abort(400, "The file you uploaded does not appear to be a valid image.")
 
-    print("[Info]", request.remote_addr, "requested to enhance '", body_image.name, "' to quality =", quality, "with watermark/randomize =", watermark, randomize_position)
+    print("[Info]", request.headers.get('X-Forwarded-For', request.remote_addr), "requested to enhance '", body_image.name, "' to quality =", quality, "with watermark/randomize =", watermark, randomize_position)
 
     # discard alpha channel (since JPEG can't handle alpha)
     if img.mode != "RGB":
