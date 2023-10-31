@@ -21,10 +21,12 @@
                     <form action="/upload" method="post" enctype="multipart/form-data" class="space-y-4">
                         <input type="file" name="file" class="text-slate-400" />
 
-                        <section class="space-y-2 rounded-md bg-slate-800 p-4">
+                        <section
+                            class="space-y-2 rounded-md bg-slate-800 p-4 border border-transparent hover:border-slate-600 transform-colors duration-300">
                             <h2 class="text-sm font-bold text-slate-400">Advanced Settings</h2>
 
-                            <div class="flex space-x-2 rounded-md bg-slate-700 px-2 py-1">
+                            <div
+                                class="flex space-x-2 rounded-md bg-slate-700 px-2 py-1 hover:bg-slate-900 transform-colors duration-300">
                                 <h2 class="text-white">
                                     <span class="text-slate-400">Quality</span> (<span class="text-sm text-slate-500">
                                         <code class="rounded-md bg-slate-600 p-1 text-slate-300">0</code> = 🥴, <code
@@ -36,12 +38,14 @@
                             </div>
 
                             <div class="flex space-x-2">
-                                <div class="flex space-x-2 rounded-md bg-slate-700 px-2 py-1">
+                                <div
+                                    class="flex space-x-2 rounded-md bg-slate-700 px-2 py-1 hover:bg-slate-900 transform-colors duration-300">
                                     <label for="watermark" class="text-slate-400">Enable Watermark?</label>
                                     <input type="checkbox" id="watermark" name="watermark" checked />
                                 </div>
 
-                                <div class="flex space-x-2 rounded-md bg-slate-700 px-2 py-1">
+                                <div
+                                    class="flex space-x-2 rounded-md bg-slate-700 px-2 py-1 hover:bg-slate-900 transform-colors duration-300">
                                     <label for="randomize" class="text-slate-400">Randomize?</label>
                                     <input type="checkbox" id="randomize" name="randomize" checked />
                                 </div>
@@ -49,7 +53,7 @@
                         </section>
 
                         <input type="submit" value="Add More JPEG"
-                            class="w-full rounded-md bg-orange-600 px-3 py-1 text-white hover:cursor-pointer hover:bg-orange-700 transform transform-colors duration-300" />
+                            class="w-full rounded-md bg-orange-600 px-3 py-1 text-white hover:cursor-pointer hover:bg-orange-700 transform-colors duration-300 hover:animate-none animate-pulse hover:py-2" />
                     </form>
                 </div>
             </div>
