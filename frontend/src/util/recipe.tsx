@@ -51,7 +51,10 @@ export const recipes: Recipe[] = [
     destroy_factor: 90,
     quality: 0,
     ingredients: [
-      { id: "sharpness", with: { factor: 100 } },
+      {
+        id: "sharpness",
+        with: { factor: 100, test: "a", b: "def", g: false, h: true },
+      },
       { id: "contrast", with: { factor: 100 } },
       { id: "posterize", with: { bits: 2 } },
       { id: "invert" },
@@ -62,39 +65,41 @@ export const recipes: Recipe[] = [
 export type IngredientMeta = {
   icon: ReactNode
   description: string
-  params: Record<string, unknown>
+  param_info: Record<string, string>
 }
 
 export const ingredientMeta: Record<string, IngredientMeta> = {
   noise: {
     icon: <FaArrowUpRightDots />,
     description: "Adds random variation",
-    params: { amount: 0.1 },
+    param_info: {
+      amount: "Amount of noise to add",
+    },
   },
   sharpness: {
     icon: <FaGlasses />,
     description: "Enhances image edge definition",
-    params: {
-      factor: 100,
+    param_info: {
+      factor: "Amount of sharpness to add",
     },
   },
   contrast: {
     icon: <FaCopy />,
     description: "Increases the visual difference between elements",
-    params: {
-      factor: 100,
+    param_info: {
+      factor: "Amount of contrast to add",
     },
   },
   posterize: {
     icon: <FaStairs />,
     description: "Reduces image colors to distinct levels",
-    params: {
-      bits: 2,
+    param_info: {
+      bits: "Number of bits to posterize to",
     },
   },
   invert: {
     icon: <FaFill />,
     description: "Reverses colors in the image",
-    params: {},
+    param_info: {},
   },
 } as const

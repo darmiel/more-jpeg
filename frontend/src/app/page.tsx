@@ -85,6 +85,11 @@ export default function Home() {
                 ingredient.disabled = !ingredient.disabled
                 setSelectedRecipe(deepCopy(selectedRecipe))
               }}
+              onOptionsUpdate={(options) => {
+                ingredient.with = options
+                setSelectedRecipe(deepCopy(selectedRecipe))
+              }}
+              options={ingredient.with}
             />
           ))}
           <Button fullWidth color="primary" startContent={<FaUtensils />}>
