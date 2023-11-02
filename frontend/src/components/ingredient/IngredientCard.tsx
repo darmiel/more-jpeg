@@ -45,6 +45,7 @@ export default function IngredientCard({
               isSelected={enabled}
               onValueChange={setEnabled}
               className="ml-1"
+              size="sm"
             />
             {options && (
               <Button
