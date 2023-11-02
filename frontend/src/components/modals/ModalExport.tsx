@@ -24,9 +24,7 @@ export default function ModalExport({ recipe }: { recipe: Recipe }) {
             />
           </ModalBody>
           <ModalFooter>
-            <Button color="primary" onClick={onClose}>
-              Close
-            </Button>
+            <Button onClick={onClose}>Close</Button>
           </ModalFooter>
         </>
       )}
