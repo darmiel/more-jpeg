@@ -91,6 +91,10 @@ export default function Home() {
   const hasFile = files && files.length > 0
   const fileRef = useRef<HTMLInputElement>(null)
 
+  function checkAutoBakeAndBake() {
+    autoBake && bake()
+  }
+
   async function bake() {
     if (!hasFile) {
       return
@@ -248,7 +252,7 @@ export default function Home() {
                 isSelected={recipe.name === selectedRecipe.name}
                 onSelect={() => {
                   setSelectedRecipe(deepCopy(recipe))
-                  autoBake && bake()
+                  checkAutoBakeAndBake()
                 }}
               />
             ))}
@@ -334,6 +338,7 @@ export default function Home() {
                 onOptionsUpdate={(options) => {
                   ingredient.with = options
                   setSelectedRecipe(deepCopy(selectedRecipe))
+                  checkAutoBakeAndBake()
                 }}
                 onRemove={() => {
                   // remove by index
