@@ -12,7 +12,6 @@ import Link from "next/link"
 import { FaGithub, FaMagnifyingGlass } from "react-icons/fa6"
 
 export default function NavBar() {
-  // const [search, setSearch] = useState("") // useSearch()
   const { search, setSearch } = useSearch()
   return (
     <Navbar isBordered>

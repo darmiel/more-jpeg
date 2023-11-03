@@ -7,13 +7,17 @@ import {
   ModalHeader,
   Textarea,
 } from "@nextui-org/react"
+import { FaFileExport } from "react-icons/fa6"
 
 export default function ModalExport({ recipe }: { recipe: Recipe }) {
   return (
     <ModalContent>
       {(onClose) => (
         <>
-          <ModalHeader>Export Recipe</ModalHeader>
+          <ModalHeader className="items-center space-x-2">
+            <FaFileExport />
+            <span>Export Recipe</span>
+          </ModalHeader>
           <ModalBody>
             <Textarea
               variant="bordered"

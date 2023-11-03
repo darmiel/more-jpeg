@@ -8,7 +8,7 @@ import {
   Textarea,
 } from "@nextui-org/react"
 import { useState } from "react"
-import { FaTriangleExclamation } from "react-icons/fa6"
+import { FaFileImport, FaTriangleExclamation } from "react-icons/fa6"
 
 export default function ModalImport({
   onImport,
@@ -21,7 +21,10 @@ export default function ModalImport({
     <ModalContent>
       {(onClose) => (
         <>
-          <ModalHeader>Import Recipe</ModalHeader>
+          <ModalHeader className="items-center space-x-2">
+            <FaFileImport />
+            <span>Import Recipe</span>
+          </ModalHeader>
           <ModalBody>
             <div className="flex items-center space-x-2 rounded-md border border-red-500 bg-red-500 bg-opacity-25 p-3 text-red-500">
               <FaTriangleExclamation />
