@@ -144,7 +144,7 @@ export default function Home() {
   }
 
   return (
-    <main className="flex min-h-screen w-full flex-col gap-8 p-24">
+    <main className="mx-auto flex min-h-screen w-full max-w-7xl flex-col gap-8 p-4">
       {/* File Selection */}
       <section className="space-y-2">
         {bakedError ? (
@@ -297,7 +297,7 @@ export default function Home() {
             <span>Recipes</span>
             <Chip variant="faded">{filteredRecipes.length}</Chip>
           </h1>
-          <div className="xlg:grid-cols-4 grid max-w-4xl gap-2 md:grid-cols-2 lg:grid-cols-3 lg:text-left 2xl:grid-cols-5">
+          <div className="xlg:grid-cols-4 grid max-w-4xl gap-2 md:grid-cols-2 lg:grid-cols-3 lg:text-left">
             {filteredRecipes.map((recipe) => (
               <RecipeCard
                 recipe={recipe}
