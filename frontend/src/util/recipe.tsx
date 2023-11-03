@@ -21,6 +21,7 @@ export type Recipe = {
   destroy_factor: number
   quality: number
   ingredients: Ingredient[]
+  preview: string
 }
 
 export const recipes: Recipe[] = [
@@ -30,6 +31,7 @@ export const recipes: Recipe[] = [
     destroy_factor: 0,
     quality: 100,
     ingredients: [],
+    preview: "/chick.jpg",
   },
   {
     name: "Lite",
@@ -37,6 +39,7 @@ export const recipes: Recipe[] = [
     destroy_factor: 10,
     quality: 10,
     ingredients: [], // no ingredients needed since the quality is 10
+    preview: "/examples/lite.jpeg",
   },
   {
     name: "Noise",
@@ -44,6 +47,7 @@ export const recipes: Recipe[] = [
     destroy_factor: 15,
     quality: 95,
     ingredients: [{ id: "exponential_noise", with: { scale: 30 } }],
+    preview: "/examples/noise.jpeg",
   },
   {
     name: "Artifact Hell",
@@ -51,6 +55,7 @@ export const recipes: Recipe[] = [
     destroy_factor: 50,
     quality: 0,
     ingredients: [],
+    preview: "/examples/artifact-hell.jpeg",
   },
   {
     name: "Pro+",
@@ -62,8 +67,8 @@ export const recipes: Recipe[] = [
       { id: "contrast", with: { factor: 100 } },
       { id: "posterize", with: { bits: 2 } },
       { id: "invert" },
-      { id: "exponential_noise", with: { scale: 50 } },
     ],
+    preview: "/examples/pro-plus.jpeg",
   },
 ]
 

@@ -24,7 +24,7 @@ limiter = Limiter(
 
 
 @app.route("/upload", methods=["POST"])
-@limiter.limit("30 per minute")
+@limiter.limit("60 per minute")
 def upload():
     try:
         quality = int(request.form.get('quality', '10'))

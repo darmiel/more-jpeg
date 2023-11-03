@@ -30,7 +30,7 @@ export default function RecipeCard({
       <Image
         removeWrapper
         className="z-0 h-full w-full object-cover"
-        src="/chick.jpg"
+        src={recipe.preview}
         alt="Preview"
       />
       <CardFooter className="mb-2 flex-col items-start gap-2 p-4 text-small">

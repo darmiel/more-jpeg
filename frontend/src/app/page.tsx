@@ -21,14 +21,21 @@ import {
   Tooltip,
 } from "@nextui-org/react"
 import clsx from "clsx"
-import { useRef, useState } from "react"
+import { SetStateAction, useRef, useState } from "react"
 import {
   ReactCompareSlider,
   ReactCompareSliderImage,
 } from "react-compare-slider"
 import {
+  FaArrowDown,
+  FaArrowUp,
+  FaBolt,
+  FaCircleDot,
   FaDownload,
   FaExpand,
+  FaEye,
+  FaEyeSlash,
+  FaFile,
   FaFileExport,
   FaFileImport,
   FaRecycle,
@@ -59,7 +66,7 @@ function downloadBlob(blobURL: string, name: string) {
 }
 
 export default function Home() {
-  const [selectedRecipe, setSelectedRecipe] = useState<Recipe>(
+  const [selectedRecipe, _setSelectedRecipe] = useState<Recipe>(
     deepCopy(recipes[0]),
   )
 
@@ -79,6 +86,9 @@ export default function Home() {
   const [bakedError, setBakedError] = useState("")
   const [isBaking, setIsBaking] = useState(false)
   const [autoBake, setAutoBake] = useState(true)
+  const [shouldAutoBake, _setShouldAutoBake] = useState(false)
+  const [hideBakePreview, setHideBakePreview] = useState(false)
+  const [expandBakePreview, setExpandBakePreview] = useState(false)
 
   const { search, setSearch } = useSearch()
   const filteredRecipes = recipes.filter((recipe) => {
@@ -91,8 +101,9 @@ export default function Home() {
   const hasFile = files && files.length > 0
   const fileRef = useRef<HTMLInputElement>(null)
 
-  function checkAutoBakeAndBake() {
+  if (shouldAutoBake) {
     autoBake && bake()
+    _setShouldAutoBake(false)
   }
 
   async function bake() {
@@ -127,6 +138,11 @@ export default function Home() {
     setBakedPreview(URL.createObjectURL(await resp.blob()))
   }
 
+  function setSelectedRecipe(newRecipe: SetStateAction<Recipe>) {
+    _setSelectedRecipe(newRecipe)
+    _setShouldAutoBake(true)
+  }
+
   return (
     <main className="flex min-h-screen w-full flex-col gap-8 p-24">
       {/* File Selection */}
@@ -135,85 +151,114 @@ export default function Home() {
           <Warning warning={bakedError} />
         ) : bakedPreview ? (
           <>
-            <div className="flex justify-between space-x-2">
-              <Button
-                startContent={<FaDownload />}
-                size="sm"
-                variant="bordered"
-                onClick={() => {
-                  let downloadName =
-                    (files &&
-                      `baked-${selectedRecipe.name}-${files[0].name}`) ||
-                    "baked.jpeg"
-                  if (!downloadName.endsWith(".jpeg")) {
-                    downloadName += ".jpeg"
-                  }
-                  downloadBlob(bakedPreview, downloadName)
-                }}
-              >
-                Save
-              </Button>
-              <Modal
-                size="5xl"
-                isOpen={!!modalPreview}
-                onClose={() => setModalPreview("")}
-              >
-                <ModalContent>
-                  <img alt="full-preview" src={modalPreview} />
-                </ModalContent>
-              </Modal>
-              <Button
-                startContent={<FaExpand />}
-                size="sm"
-                variant="bordered"
-                onClick={() => {
-                  setModalPreview(bakedPreview)
-                }}
-              >
-                Full Preview
-              </Button>
-              <Button
-                startContent={<FaRecycle />}
-                size="sm"
-                variant="bordered"
-                onClick={() => {
-                  setFiles(null)
-                  setSourcePreview("")
-                  setBakedPreview("")
-                }}
-                color="danger"
-              >
-                Start Over
-              </Button>
+            <div className="flex flex-wrap justify-between space-x-2 md:flex-row">
+              <div className="flex flex-wrap items-center space-x-2 md:flex-row">
+                {files && files[0].name && (
+                  <code className="bg-neutral-800 px-2 py-1">
+                    {files[0].name.length > 20
+                      ? files[0].name.slice(0, 20) + "..."
+                      : files[0].name}
+                  </code>
+                )}
+                <Tooltip content="Hide Preview">
+                  <Button
+                    isIconOnly
+                    startContent={hideBakePreview ? <FaEyeSlash /> : <FaEye />}
+                    variant={hideBakePreview ? "bordered" : "solid"}
+                    size="sm"
+                    onClick={() => setHideBakePreview((prev) => !prev)}
+                  />
+                </Tooltip>
+                <Tooltip content="Expand Preview">
+                  <Button
+                    isIconOnly
+                    startContent={
+                      expandBakePreview ? <FaArrowUp /> : <FaArrowDown />
+                    }
+                    variant={expandBakePreview ? "solid" : "bordered"}
+                    size="sm"
+                    onClick={() => setExpandBakePreview((prev) => !prev)}
+                    isDisabled={hideBakePreview}
+                  />
+                </Tooltip>
+                <Modal
+                  size="5xl"
+                  isOpen={!!modalPreview}
+                  onClose={() => setModalPreview("")}
+                >
+                  <ModalContent>
+                    {/* Ignoring this error since it's only a blob */}
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img alt="full-preview" src={modalPreview} />
+                  </ModalContent>
+                </Modal>
+                <Tooltip content="Full Preview">
+                  <Button
+                    isIconOnly
+                    startContent={<FaExpand />}
+                    size="sm"
+                    variant="bordered"
+                    onClick={() => {
+                      setModalPreview(bakedPreview)
+                    }}
+                  />
+                </Tooltip>
+              </div>
+              <div className="flex items-center space-x-2">
+                <Button
+                  startContent={<FaDownload />}
+                  size="sm"
+                  variant="bordered"
+                  onClick={() => {
+                    let downloadName =
+                      (files &&
+                        `baked-${selectedRecipe.name}-${files[0].name}`) ||
+                      "baked.jpeg"
+                    if (!downloadName.endsWith(".jpeg")) {
+                      downloadName += ".jpeg"
+                    }
+                    downloadBlob(bakedPreview, downloadName)
+                  }}
+                >
+                  Save
+                </Button>
+                <Button
+                  startContent={<FaRecycle />}
+                  size="sm"
+                  variant="bordered"
+                  onClick={() => {
+                    setFiles(null)
+                    setSourcePreview("")
+                    setBakedPreview("")
+                  }}
+                  color="danger"
+                >
+                  Start Over
+                </Button>
+              </div>
             </div>
-            <ReactCompareSlider
-              className="max-h-96 items-center justify-center overflow-hidden rounded-lg"
-              itemOne={
-                <ReactCompareSliderImage src={sourcePreview} alt="Image one" />
-              }
-              itemTwo={
-                <ReactCompareSliderImage src={bakedPreview} alt="Image two" />
-              }
-            />
-          </>
-        ) : files ? (
-          <div className="relative flex max-h-72 items-center justify-center overflow-hidden rounded-lg">
-            <img src={sourcePreview} />
-            <div className="absolute left-4 top-4 rounded-md border border-neutral-600 bg-neutral-800 px-2 py-1">
-              {files[0].name}
-              <Button
-                isIconOnly
-                startContent={<FaRecycle />}
-                size="sm"
-                variant="light"
-                onClick={() => {
-                  setFiles(null)
-                }}
+            {!hideBakePreview && (
+              <ReactCompareSlider
+                className={clsx(
+                  "items-center justify-center overflow-hidden rounded-lg",
+                  {
+                    "h-96": !expandBakePreview,
+                  },
+                )}
+                itemOne={
+                  <ReactCompareSliderImage
+                    src={sourcePreview}
+                    alt="Image one"
+                  />
+                }
+                itemTwo={
+                  <ReactCompareSliderImage src={bakedPreview} alt="Image two" />
+                }
               />
-            </div>
-          </div>
+            )}
+          </>
         ) : (
-          <>
+          <div className="flex h-52 w-full animate-pulse flex-col items-center justify-center space-y-2 rounded-lg bg-neutral-800">
             <input
               type="file"
               accept="image/jpeg,image/png"
@@ -221,19 +266,27 @@ export default function Home() {
               onChange={(event) => {
                 setFiles(event.currentTarget.files)
                 if (event.currentTarget.files) {
-                  setSourcePreview(
-                    URL.createObjectURL(event.currentTarget.files[0]),
+                  const blobUrl = URL.createObjectURL(
+                    event.currentTarget.files[0],
                   )
+                  setSourcePreview(blobUrl)
+                  setBakedPreview(blobUrl)
                 } else {
                   setSourcePreview("")
                 }
               }}
               hidden
             />
-            <Button onClick={() => fileRef?.current?.click()}>
-              Select File
+            <Button
+              onClick={() => fileRef?.current?.click()}
+              startContent={<FaFile />}
+            >
+              Select Image
             </Button>
-          </>
+            <span className="text-small text-neutral-400">
+              Maximum Size: <span className="text-white">20MB</span>
+            </span>
+          </div>
         )}
       </section>
 
@@ -244,7 +297,7 @@ export default function Home() {
             <span>Recipes</span>
             <Chip variant="faded">{filteredRecipes.length}</Chip>
           </h1>
-          <div className="mb-32 grid gap-2 lg:mb-0 lg:w-full lg:max-w-5xl lg:grid-cols-4 lg:text-left">
+          <div className="xlg:grid-cols-4 grid max-w-4xl gap-2 md:grid-cols-2 lg:grid-cols-3 lg:text-left 2xl:grid-cols-5">
             {filteredRecipes.map((recipe) => (
               <RecipeCard
                 recipe={recipe}
@@ -252,7 +305,6 @@ export default function Home() {
                 isSelected={recipe.name === selectedRecipe.name}
                 onSelect={() => {
                   setSelectedRecipe(deepCopy(recipe))
-                  checkAutoBakeAndBake()
                 }}
               />
             ))}
@@ -278,7 +330,7 @@ export default function Home() {
             </Card>
           </div>
         </div>
-        <div className="flex w-full flex-col md:w-96">
+        <div className="flex w-[25rem] flex-col">
           <div className="mb-2 flex items-center justify-between">
             <h1 className="text-lg font-bold">Ingredients</h1>
             <div className="flex space-x-1">
@@ -338,7 +390,6 @@ export default function Home() {
                 onOptionsUpdate={(options) => {
                   ingredient.with = options
                   setSelectedRecipe(deepCopy(selectedRecipe))
-                  checkAutoBakeAndBake()
                 }}
                 onRemove={() => {
                   // remove by index
@@ -379,23 +430,31 @@ export default function Home() {
             />
 
             <div className="rounded-lg border border-dashed border-neutral-600 p-2">
-              <Button
-                fullWidth
-                color={hasFile ? "primary" : isBaking ? "secondary" : "default"}
-                startContent={<FaUtensils />}
-                onClick={bake}
-                disabled={isBaking || !hasFile}
-                isLoading={isBaking}
-              >
-                Bake!
-              </Button>
-              <Checkbox
-                isSelected={autoBake}
-                onValueChange={setAutoBake}
-                className="mt-2"
-              >
-                Auto Bake
-              </Checkbox>
+              <div className="flex items-center space-x-2">
+                <Button
+                  fullWidth
+                  color={
+                    hasFile ? "primary" : isBaking ? "secondary" : "default"
+                  }
+                  startContent={<FaUtensils />}
+                  onClick={bake}
+                  disabled={isBaking || !hasFile}
+                  isLoading={isBaking}
+                >
+                  Bake!
+                </Button>
+
+                <Tooltip
+                  content={`Auto Bake: ${autoBake ? "enabled" : "disabled"}`}
+                >
+                  <Button
+                    isIconOnly
+                    startContent={autoBake ? <FaBolt /> : <FaCircleDot />}
+                    color={autoBake ? "secondary" : "default"}
+                    onClick={() => setAutoBake((prev) => !prev)}
+                  />
+                </Tooltip>
+              </div>
               <div className="mt-2 flex space-x-2">
                 <Checkbox
                   isSelected={enableWatermark}
