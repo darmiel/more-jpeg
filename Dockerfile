@@ -1,7 +1,7 @@
 FROM python:3.9-slim
 
 LABEL maintainer="darmiel <hi@d2a.io>"
-LABEL org.opencontainers.image.source = "https://github.com/darmiel/perplex"
+LABEL org.opencontainers.image.source = "https://github.com/darmiel/more-jpeg"
 
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
