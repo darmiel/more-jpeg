@@ -55,7 +55,7 @@ export const recipes: Recipe[] = [
       { id: "contrast", with: { factor: 100 } },
       { id: "posterize", with: { bits: 2 } },
       { id: "invert" },
-      { id: "exponential_noise", with: {scale: 50}}
+      { id: "exponential_noise", with: { scale: 50 } },
     ],
   },
 ]
@@ -67,7 +67,7 @@ export type IngredientMeta = {
 }
 
 export const ingredientMeta: Record<string, IngredientMeta> = {
-  noise: {
+  exponential_noise: {
     icon: <FaArrowUpRightDots />,
     description: "Adds random variation",
     param_info: {

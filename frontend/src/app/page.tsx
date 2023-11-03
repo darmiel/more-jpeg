@@ -146,6 +146,7 @@ export default function Home() {
                 Save
               </Button>
               <Modal
+                size="5xl"
                 isOpen={!!modalPreview}
                 onClose={() => setModalPreview("")}
               >
