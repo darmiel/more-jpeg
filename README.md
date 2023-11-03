@@ -12,4 +12,72 @@ As you can see, JPEGs with quality `10`, `5` or even `0` look _way_ better than 
 
 ## Demo
 
-Try it out: https://jpeg.qwer.tz/ _(no uptime gurantee)_
+Try it out here: https://jpeg.qwer.tz/ _(no uptime gurantee)_
+
+# Contributing
+
+## Creating new Recipes
+
+> [!NOTE]
+> Recipes determine the final export quality of the JPEGs.
+> They also contain a list of "ingredients" that are applied **before** the export
+> (such as inverting an image).
+>
+> If you want to contribute such new ingredients, please refer to the section [Creating new Ingredients](#creating-new-ingredients).
+
+It is easy to add new recipes, simply append your recipe to the `recipes` object in `src/util/recipe.tsx`.
+You may use the **Export** button in the frontend to generate recipes.
+
+---
+
+## Creating new Ingredients
+
+To create a new ingredient (image operation), follow these steps:
+
+### Backend
+
+First, create a function with the name `action_<ingredient-identifier>` using this signature `(img: Image, options: dict) -> Image`
+
+```python
+def action_invert(img: Image, _: dict) -> Image:
+    return ImageOps.invert(img)
+```
+
+Then add your ingredient to the `actions` dictionary in `recipe_actions.py`.
+
+```python
+"invert": {
+    "executor": action_invert,
+    # optional, if you have any parameters, specify them here by name + accepted types
+    "options": {
+        "scale": [float, int]
+    }
+},
+```
+
+### Frontend
+
+In `src/util/recipe.tsx`, include your ingredient within `ingredientMeta`.
+You will need to specify the following attributes:
+
+- `icon` (ReactNode) - see [react-icons](https://react-icons.github.io/react-icons/icons?name=fa6) for a list of available icons
+- `description` (string)
+
+If your ingredient accepts any parameters, also add:
+
+- `param_info` (ParamInfo)
+
+```typescript
+invert: {
+    icon: <FaFill />,
+    description: "Reverses colors in the image",
+    param_info: {
+      scale: {
+        // will be shown if you hover over the (i) in the ingredient options
+        description: "Amount of xyz to add",
+        // will be the default value when adding new ingredients
+        default: 30,
+      },
+    },
+},
+```
