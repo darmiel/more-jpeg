@@ -100,7 +100,8 @@ export default function Home() {
     )
     // send request to backend
     const data = new FormData()
-    data.append("watermark", "on")
+    data.append("watermark", enableWatermark ? "on" : "off")
+    data.append("randomize", enableRandomWatermarkPosition ? "on" : "off")
     data.append("quality", selectedRecipe.quality.toString())
     data.append("ingredients", JSON.stringify(ingredients))
     data.append("file", files![0])
