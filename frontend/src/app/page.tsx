@@ -4,10 +4,11 @@ import IngredientCard from "@/components/ingredient/IngredientCard"
 import QualityCard from "@/components/ingredient/QualityCard"
 import ModalExport from "@/components/modals/ModalExport"
 import ModalImport from "@/components/modals/ModalImport"
+import PopoverAddIngredient from "@/components/modals/PopoverAddIngredient"
 import RecipeCard from "@/components/recipe/RecipeCard"
 import Warning from "@/components/ui/Warning"
 import { useSearch } from "@/context/SearchContext"
-import { Recipe, ingredientMeta, recipes } from "@/util/recipe"
+import { Options, Recipe, ingredientMeta, recipes } from "@/util/recipe"
 import {
   Button,
   Card,
@@ -233,7 +234,7 @@ export default function Home() {
       </section>
 
       {/* Recipes */}
-      <section className="flex flex-col md:flex-row">
+      <section className="flex flex-col md:flex-row md:space-x-4">
         <div className="flex flex-grow flex-col">
           <h1 className="mb-2 space-x-2 text-lg font-bold text-white">
             <span>Recipes</span>
@@ -337,6 +338,29 @@ export default function Home() {
                 options={ingredient.with}
               />
             ))}
+
+            <PopoverAddIngredient
+              onAdd={(name, meta) => {
+                const options: Options = {}
+                meta.param_info &&
+                  Object.entries(meta.param_info).forEach(([name, info]) => {
+                    info.default && (options[name] = info.default)
+                  })
+                setSelectedRecipe((prev) => {
+                  return {
+                    ...prev,
+                    ingredients: [
+                      ...prev.ingredients,
+                      {
+                        id: name,
+                        with: options,
+                        disabled: false,
+                      },
+                    ],
+                  }
+                })
+              }}
+            />
 
             <div className="rounded-lg border border-dashed border-neutral-600 p-2">
               <Button

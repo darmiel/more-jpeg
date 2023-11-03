@@ -16,11 +16,13 @@ export default function IngredientCard({
   name: string
   meta: IngredientMeta
   options?: Options
-  enabled: boolean
-  setEnabled: (enabled: boolean) => void
-  onOptionsUpdate: (newOptions: Options) => void
+  enabled?: boolean
+  setEnabled?: (enabled: boolean) => void
+  onOptionsUpdate?: (newOptions: Options) => void
 }) {
   const [showOptions, setShowOptions] = useState(false)
+
+  const isEnabled = enabled || enabled === undefined
 
   return (
     <div className="flex flex-col space-y-2 rounded-md border border-neutral-800 bg-neutral-900 p-4 transition-colors duration-300 hover:bg-neutral-950">
@@ -29,7 +31,7 @@ export default function IngredientCard({
           className={clsx(
             "flex items-center space-x-1 text-2xl text-blue-500",
             {
-              "text-neutral-500": !enabled,
+              "text-neutral-500": !isEnabled,
             },
           )}
         >
@@ -37,16 +39,20 @@ export default function IngredientCard({
         </div>
         <div className="flex w-full flex-col">
           <span className="flex items-center">
-            <b className={clsx({ "text-neutral-600 line-through": !enabled })}>
+            <b
+              className={clsx({ "text-neutral-600 line-through": !isEnabled })}
+            >
               {name}
             </b>
-            <Checkbox
-              color="success"
-              isSelected={enabled}
-              onValueChange={setEnabled}
-              className="ml-1"
-              size="sm"
-            />
+            {enabled !== undefined && (
+              <Checkbox
+                color="success"
+                isSelected={enabled}
+                onValueChange={setEnabled}
+                className="ml-1"
+                size="sm"
+              />
+            )}
             {options && (
               <Button
                 isIconOnly
@@ -68,10 +74,10 @@ export default function IngredientCard({
           <small className="text-neutral-400">{meta.description}</small>
         </div>
       </div>
-      {options && showOptions && (
+      {options && showOptions && onOptionsUpdate && (
         <div className="flex flex-wrap gap-2">
           {Object.entries(options).map(([name, value]) => {
-            const helpText = meta.param_info[name]
+            const helpText = meta.param_info[name].description
             const paramStartContent = (
               <code className="flex items-center space-x-1 rounded-l-sm bg-neutral-700 px-2 py-1">
                 <span>{name}</span>
