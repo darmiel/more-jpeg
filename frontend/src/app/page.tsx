@@ -335,6 +335,17 @@ export default function Home() {
                   ingredient.with = options
                   setSelectedRecipe(deepCopy(selectedRecipe))
                 }}
+                onRemove={() => {
+                  // remove by index
+                  setSelectedRecipe((prev) => {
+                    return {
+                      ...prev,
+                      ingredients: prev.ingredients.filter(
+                        (_, i) => i !== index,
+                      ),
+                    }
+                  })
+                }}
                 options={ingredient.with}
               />
             ))}
