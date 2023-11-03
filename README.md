@@ -28,6 +28,29 @@ Try it out here: https://jpeg.qwer.tz/ _(no uptime gurantee)_
 It is easy to add new recipes, simply append your recipe to the `recipes` object in `src/util/recipe.tsx`.
 You may use the **Export** button in the frontend to generate recipes.
 
+You will need to specify the following attributes:
+
+- `name` (string) - A name for your recipe
+- `description` (string) - A description for your recipe
+- `destroy_factor` (uint) - A rating from `0` (_no destruction_) to `100` (_much destruction_) how much the image is destroyed
+- `quality` (uint) - The JPEG export quality from `0` (_compression artifcats' dream`) to `100` (_no compression artifacts_)
+- `ingredients` (Ingredient[]) - A list of ingredients for the recipe
+- `preview` (string) - Path to a preview (you should put it in the `frontend/public/examples` directory)
+
+```typescript
+{
+    name: "Noise",
+    description: "Adds a little bit of noise",
+    destroy_factor: 15,
+    quality: 95,
+    ingredients: [{ 
+        id: "exponential_noise", 
+        with: { scale: 30 }
+    }],
+    preview: "/examples/noise.jpeg",
+},
+```
+
 ---
 
 ## Creating new Ingredients
