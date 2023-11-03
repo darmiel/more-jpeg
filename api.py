@@ -2,8 +2,9 @@ from io import BytesIO
 from random import randint
 
 from PIL import Image, ImageDraw, ImageFont
-from flask import Flask, request, render_template, send_file, abort
+from flask import Flask, request, send_file, abort
 from flask_cors import CORS
+from flask_limiter import Limiter
 
 from recipe import parse_ingredients, run_action
 
@@ -11,17 +12,19 @@ app = Flask(__name__)
 CORS(app)
 
 
-@app.route("/example.png")
-def file_example():
-    return send_file("templates/example.png")
+def get_remote_address():
+    return request.headers.get('X-Forwarded-For', request.remote_addr)
 
 
-@app.route("/")
-def index():
-    return render_template("index.html")
+limiter = Limiter(
+    get_remote_address,
+    app=app,
+    storage_uri="memory://",
+)
 
 
 @app.route("/upload", methods=["POST"])
+@limiter.limit("30 per minute")
 def upload():
     try:
         quality = int(request.form.get('quality', '10'))
@@ -45,7 +48,7 @@ def upload():
     except Exception:
         return abort(400, "The file you uploaded does not appear to be a valid image.")
 
-    print("[Info]", request.headers.get('X-Forwarded-For', request.remote_addr), "requested to enhance '",
+    print("[Info]", get_remote_address(), "requested to enhance '",
           body_image.name, "' to quality =", quality, "with watermark/randomize =", watermark, randomize_position)
 
     # discard alpha channel (since JPEG can't handle alpha)

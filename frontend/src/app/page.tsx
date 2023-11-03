@@ -35,6 +35,9 @@ import {
   FaUtensils,
 } from "react-icons/fa6"
 
+const BACKEND_URL =
+  process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:5000"
+
 function deepCopy(obj: unknown) {
   return JSON.parse(JSON.stringify(obj))
 }
@@ -74,6 +77,7 @@ export default function Home() {
   const [modalPreview, setModalPreview] = useState("")
   const [bakedError, setBakedError] = useState("")
   const [isBaking, setIsBaking] = useState(false)
+  const [autoBake, setAutoBake] = useState(true)
 
   const { search, setSearch } = useSearch()
   const filteredRecipes = recipes.filter((recipe) => {
@@ -102,21 +106,19 @@ export default function Home() {
     data.append("file", files![0])
 
     setIsBaking(true)
-    const resp = await fetch("http://localhost:5000/upload", {
+    const resp = await fetch(BACKEND_URL + "/upload", {
       method: "POST",
       body: data,
     })
     setIsBaking(false)
-    setBakedPreview("")
 
     if (!resp.ok) {
+      setBakedPreview("")
       setBakedError(await resp.text())
       return
     }
 
     setBakedPreview(URL.createObjectURL(await resp.blob()))
-
-    console.log(resp)
   }
 
   return (
@@ -242,7 +244,10 @@ export default function Home() {
                 recipe={recipe}
                 key={recipe.name}
                 isSelected={recipe.name === selectedRecipe.name}
-                onSelect={() => setSelectedRecipe(deepCopy(recipe))}
+                onSelect={() => {
+                  setSelectedRecipe(deepCopy(recipe))
+                  autoBake && bake()
+                }}
               />
             ))}
             <Card
@@ -343,6 +348,13 @@ export default function Home() {
               >
                 Bake!
               </Button>
+              <Checkbox
+                isSelected={autoBake}
+                onValueChange={setAutoBake}
+                className="mt-2"
+              >
+                Auto Bake
+              </Checkbox>
               <div className="mt-2 flex space-x-2">
                 <Checkbox
                   isSelected={enableWatermark}
