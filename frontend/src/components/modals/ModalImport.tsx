@@ -1,3 +1,4 @@
+import Warning from "@/components/ui/Warning"
 import { Recipe } from "@/util/recipe"
 import {
   Button,
@@ -8,7 +9,7 @@ import {
   Textarea,
 } from "@nextui-org/react"
 import { useState } from "react"
-import { FaFileImport, FaTriangleExclamation } from "react-icons/fa6"
+import { FaFileImport } from "react-icons/fa6"
 
 export default function ModalImport({
   onImport,
@@ -26,10 +27,7 @@ export default function ModalImport({
             <span>Import Recipe</span>
           </ModalHeader>
           <ModalBody>
-            <div className="flex items-center space-x-2 rounded-md border border-red-500 bg-red-500 bg-opacity-25 p-3 text-red-500">
-              <FaTriangleExclamation />
-              <span>The site might break if data is invalid</span>
-            </div>
+            <Warning warning="The site might break if data is invalid" />
             <Textarea
               variant="bordered"
               value={content}

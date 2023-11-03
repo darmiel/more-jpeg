@@ -54,7 +54,7 @@ export default function ValueEdit({
               size="sm"
               placeholder={String(value)}
               value={newValue as string}
-              onValueChange={setNewValue}
+              onValueChange={(newVal) => setNewValue(Number(newVal))}
             />
           ) : typeof value === "string" ? (
             <Input

@@ -51,10 +51,7 @@ export const recipes: Recipe[] = [
     destroy_factor: 90,
     quality: 0,
     ingredients: [
-      {
-        id: "sharpness",
-        with: { factor: 100, test: "a", b: "def", g: false, h: true },
-      },
+      { id: "sharpness", with: { factor: 100 } },
       { id: "contrast", with: { factor: 100 } },
       { id: "posterize", with: { bits: 2 } },
       { id: "invert" },

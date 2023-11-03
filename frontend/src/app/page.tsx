@@ -5,20 +5,29 @@ import QualityCard from "@/components/ingredient/QualityCard"
 import ModalExport from "@/components/modals/ModalExport"
 import ModalImport from "@/components/modals/ModalImport"
 import RecipeCard from "@/components/recipe/RecipeCard"
+import Warning from "@/components/ui/Warning"
 import { useSearch } from "@/context/SearchContext"
 import { Recipe, ingredientMeta, recipes } from "@/util/recipe"
 import {
   Button,
   Card,
   CardBody,
+  Checkbox,
   Chip,
   Link,
   Modal,
+  ModalContent,
   Tooltip,
 } from "@nextui-org/react"
 import clsx from "clsx"
 import { useRef, useState } from "react"
 import {
+  ReactCompareSlider,
+  ReactCompareSliderImage,
+} from "react-compare-slider"
+import {
+  FaDownload,
+  FaExpand,
   FaFileExport,
   FaFileImport,
   FaRecycle,
@@ -30,13 +39,40 @@ function deepCopy(obj: unknown) {
   return JSON.parse(JSON.stringify(obj))
 }
 
+function downloadBlob(blobURL: string, name: string) {
+  const link = document.createElement("a")
+  link.href = blobURL
+  link.download = name
+  document.body.appendChild(link)
+  link.dispatchEvent(
+    new MouseEvent("click", {
+      bubbles: true,
+      cancelable: true,
+      view: window,
+    }),
+  )
+  document.body.removeChild(link)
+}
+
 export default function Home() {
   const [selectedRecipe, setSelectedRecipe] = useState<Recipe>(
     deepCopy(recipes[0]),
   )
 
+  // Import / Export
   const [modalImportOpen, setModalImportOpen] = useState(false)
   const [modalExportOpen, setModalExportOpen] = useState(false)
+
+  // Watermark
+  const [enableWatermark, setEnableWatermark] = useState(true)
+  const [enableRandomWatermarkPosition, setEnableRandomWatermarkPosition] =
+    useState(true)
+
+  // Bake
+  const [sourcePreview, setSourcePreview] = useState("")
+  const [bakedPreview, setBakedPreview] = useState("")
+  const [modalPreview, setModalPreview] = useState("")
+  const [bakedError, setBakedError] = useState("")
   const [isBaking, setIsBaking] = useState(false)
 
   const { search, setSearch } = useSearch()
@@ -60,28 +96,100 @@ export default function Home() {
     )
     // send request to backend
     const data = new FormData()
+    data.append("watermark", "on")
     data.append("quality", selectedRecipe.quality.toString())
     data.append("ingredients", JSON.stringify(ingredients))
     data.append("file", files![0])
 
     setIsBaking(true)
-
     const resp = await fetch("http://localhost:5000/upload", {
       method: "POST",
       body: data,
     })
-    console.log(resp)
-
     setIsBaking(false)
+    setBakedPreview("")
+
+    if (!resp.ok) {
+      setBakedError(await resp.text())
+      return
+    }
+
+    setBakedPreview(URL.createObjectURL(await resp.blob()))
+
+    console.log(resp)
   }
 
   return (
     <main className="flex min-h-screen w-full flex-col gap-8 p-24">
       {/* File Selection */}
       <section className="space-y-2">
-        {files ? (
+        {bakedError ? (
+          <Warning warning={bakedError} />
+        ) : bakedPreview ? (
+          <>
+            <div className="flex justify-between space-x-2">
+              <Button
+                startContent={<FaDownload />}
+                size="sm"
+                variant="bordered"
+                onClick={() => {
+                  let downloadName =
+                    (files &&
+                      `baked-${selectedRecipe.name}-${files[0].name}`) ||
+                    "baked.jpeg"
+                  if (!downloadName.endsWith(".jpeg")) {
+                    downloadName += ".jpeg"
+                  }
+                  downloadBlob(bakedPreview, downloadName)
+                }}
+              >
+                Save
+              </Button>
+              <Modal
+                isOpen={!!modalPreview}
+                onClose={() => setModalPreview("")}
+              >
+                <ModalContent>
+                  <img alt="full-preview" src={modalPreview} />
+                </ModalContent>
+              </Modal>
+              <Button
+                startContent={<FaExpand />}
+                size="sm"
+                variant="bordered"
+                onClick={() => {
+                  setModalPreview(bakedPreview)
+                }}
+              >
+                Full Preview
+              </Button>
+              <Button
+                startContent={<FaRecycle />}
+                size="sm"
+                variant="bordered"
+                onClick={() => {
+                  setFiles(null)
+                  setSourcePreview("")
+                  setBakedPreview("")
+                }}
+                color="danger"
+              >
+                Start Over
+              </Button>
+            </div>
+            <ReactCompareSlider
+              className="max-h-96 items-center justify-center overflow-hidden rounded-lg"
+              itemOne={
+                <ReactCompareSliderImage src={sourcePreview} alt="Image one" />
+              }
+              itemTwo={
+                <ReactCompareSliderImage src={bakedPreview} alt="Image two" />
+              }
+            />
+          </>
+        ) : files ? (
           <div className="relative flex max-h-72 items-center justify-center overflow-hidden rounded-lg">
-            <img src={URL.createObjectURL(files[0])} />
+            <img src={sourcePreview} />
             <div className="absolute left-4 top-4 rounded-md border border-neutral-600 bg-neutral-800 px-2 py-1">
               {files[0].name}
               <Button
@@ -103,6 +211,13 @@ export default function Home() {
               ref={fileRef}
               onChange={(event) => {
                 setFiles(event.currentTarget.files)
+                if (event.currentTarget.files) {
+                  setSourcePreview(
+                    URL.createObjectURL(event.currentTarget.files[0]),
+                  )
+                } else {
+                  setSourcePreview("")
+                }
               }}
               hidden
             />
@@ -215,16 +330,34 @@ export default function Home() {
                 options={ingredient.with}
               />
             ))}
-            <Button
-              fullWidth
-              color={hasFile ? "primary" : isBaking ? "secondary" : "default"}
-              startContent={<FaUtensils />}
-              onClick={bake}
-              disabled={isBaking || !hasFile}
-              isLoading={isBaking}
-            >
-              Bake!
-            </Button>
+
+            <div className="rounded-lg border border-dashed border-neutral-600 p-2">
+              <Button
+                fullWidth
+                color={hasFile ? "primary" : isBaking ? "secondary" : "default"}
+                startContent={<FaUtensils />}
+                onClick={bake}
+                disabled={isBaking || !hasFile}
+                isLoading={isBaking}
+              >
+                Bake!
+              </Button>
+              <div className="mt-2 flex space-x-2">
+                <Checkbox
+                  isSelected={enableWatermark}
+                  onValueChange={setEnableWatermark}
+                >
+                  Watermark
+                </Checkbox>
+                <Checkbox
+                  isSelected={enableRandomWatermarkPosition}
+                  onValueChange={setEnableRandomWatermarkPosition}
+                  isDisabled={!enableWatermark}
+                >
+                  Random Position
+                </Checkbox>
+              </div>
+            </div>
           </section>
         </div>
       </section>
