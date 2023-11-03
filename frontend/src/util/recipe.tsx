@@ -36,7 +36,7 @@ export const recipes: Recipe[] = [
     description: "Adds a little bit of noise",
     destroy_factor: 15,
     quality: 95,
-    ingredients: [{ id: "noise", with: { amount: 0.1 } }],
+    ingredients: [{ id: "exponential_noise", with: { scale: 30 } }],
   },
   {
     name: "Artifact Hell",
@@ -58,6 +58,7 @@ export const recipes: Recipe[] = [
       { id: "contrast", with: { factor: 100 } },
       { id: "posterize", with: { bits: 2 } },
       { id: "invert" },
+      { id: "exponential_noise", with: {scale: 50}}
     ],
   },
 ]
