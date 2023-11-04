@@ -25,7 +25,7 @@ Try it out here: https://jpeg.qwer.tz/ _(no uptime gurantee)_
 >
 > If you want to contribute such new ingredients, please refer to the section [Creating new Ingredients](#creating-new-ingredients).
 
-It is easy to add new recipes, simply append your recipe to the `recipes` object in `src/util/recipe.tsx`.
+It is easy to add new recipes, simply append your recipe to the `recipes` object in [`frontend/src/util/recipe.tsx`](frontend/src/util/recipe.tsx).
 You may use the **Export** button in the frontend to generate recipes.
 
 You will need to specify the following attributes:
@@ -33,7 +33,7 @@ You will need to specify the following attributes:
 - `name` (string) - A name for your recipe
 - `description` (string) - A description for your recipe
 - `destroy_factor` (uint) - A rating from `0` (_no destruction_) to `100` (_much destruction_) how much the image is destroyed
-- `quality` (uint) - The JPEG export quality from `0` (_compression artifcats' dream`) to `100` (_no compression artifacts_)
+- `quality` (uint) - The JPEG export quality from `0` (_compression artifcats' dream_) to `100` (_no compression artifacts_)
 - `ingredients` (Ingredient[]) - A list of ingredients for the recipe
 - `preview` (string) - Path to a preview (you should put it in the `frontend/public/examples` directory)
 
@@ -59,14 +59,14 @@ To create a new ingredient (image operation), follow these steps:
 
 ### Backend
 
-First, create a function with the name `action_<ingredient-identifier>` using this signature `(img: Image, options: dict) -> Image`
+First, in [`recipe_actions.py`](recipe_actions.py) create a function with the name `action_<ingredient-identifier>` using this signature `(img: Image, options: dict) -> Image`
 
 ```python
 def action_invert(img: Image, _: dict) -> Image:
     return ImageOps.invert(img)
 ```
 
-Then add your ingredient to the `actions` dictionary in `recipe_actions.py`.
+Then add your ingredient to the `actions` dictionary in [`recipe_actions.py`](recipe_actions.py).
 
 ```python
 "invert": {
@@ -80,7 +80,7 @@ Then add your ingredient to the `actions` dictionary in `recipe_actions.py`.
 
 ### Frontend
 
-In `src/util/recipe.tsx`, include your ingredient within `ingredientMeta`.
+In [`frontend/src/util/recipe.tsx`](frontend/src/util/recipe.tsx), include your ingredient within `ingredientMeta`.
 You will need to specify the following attributes:
 
 - `icon` (ReactNode) - see [react-icons](https://react-icons.github.io/react-icons/icons?name=fa6) for a list of available icons
@@ -90,7 +90,7 @@ If your ingredient accepts any parameters, also add:
 
 - `param_info` (ParamInfo)
 
-```typescript
+```tsx
 invert: {
     icon: <FaFill />,
     description: "Reverses colors in the image",
