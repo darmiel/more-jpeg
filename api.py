@@ -67,15 +67,15 @@ def upload():
         except Exception:
             return abort(400, "cannot convert image to RGB")
 
-    # add watermark
-    img = watermark.paint(img)
-
     # run ingredients
     for ingredient in ingredients:
         try:
             img = run_action(ingredient.identifier, ingredient.options, img)
         except Exception as exception:
             return abort(400, exception)
+
+    # add watermark (if enabled)
+    img = watermark.paint(img)
 
     # "enhance" quality and return
     out = BytesIO()

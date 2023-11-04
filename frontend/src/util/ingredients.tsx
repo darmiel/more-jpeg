@@ -3,13 +3,19 @@ import {
   FaArrowUpRightDots,
   FaArrowsLeftRight,
   FaArrowsUpDown,
+  FaBraille,
   FaCopy,
   FaFill,
   FaGlasses,
+  FaMagnet,
   FaMoon,
+  FaPen,
+  FaShapes,
   FaStairs,
+  FaStamp,
   FaUncharted,
   FaWaveSquare,
+  FaWind,
 } from "react-icons/fa6"
 
 /**
@@ -128,6 +134,51 @@ export const ingredients: Record<string, IngredientInfo> = {
       threshold: {
         description: "Pixels above this greyscale level are inverted",
         default: 128,
+      },
+    },
+  },
+  emboss: {
+    icon: <FaStamp />,
+    description: "Creates an embossed effect",
+    parameters: {},
+  },
+  blur: {
+    icon: <FaWind />,
+    description: "Blurs the image",
+    parameters: {
+      radius: {
+        description: "Radius of blurring",
+        default: 2,
+      },
+    },
+  },
+  edge_enhance: {
+    icon: <FaMagnet />,
+    description: "Enhances edges in the image",
+    parameters: {},
+  },
+  pixelate: {
+    icon: <FaBraille />,
+    description: "Pixelates the image",
+    parameters: {
+      box_size: {
+        description: "Size of pixelation boxes",
+        default: 10,
+      },
+    },
+  },
+  warhol: {
+    icon: <FaShapes />,
+    description: "Applies a Warhol-like effect",
+    parameters: {},
+  },
+  cartoonize: {
+    icon: <FaPen />,
+    description: "Converts the image into a cartoon-like representation",
+    parameters: {
+      color_levels: {
+        description: "Number of color levels",
+        default: 6,
       },
     },
   },

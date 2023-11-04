@@ -1,6 +1,6 @@
 import PIL.Image as ImageNamespace
 import numpy as np
-from PIL import ImageEnhance, ImageOps
+from PIL import ImageEnhance, ImageFilter, ImageOps
 from PIL.Image import Image
 
 
@@ -60,6 +60,54 @@ def action_shift(img: Image, options: dict) -> Image:
     return ImageNamespace.fromarray(img)
 
 
+def action_emboss(img: Image, _: dict) -> Image:
+    return img.filter(ImageFilter.EMBOSS)
+
+
+def action_blur(img: Image, options: dict) -> Image:
+    return img.filter(ImageFilter.GaussianBlur(
+        radius=clamp(options.get('radius', 2), 0, 100)
+    ))
+
+
+def action_edge_enhance(img: Image, _: dict) -> Image:
+    return img.filter(ImageFilter.EDGE_ENHANCE)
+
+
+def action_pixelate(img: Image, options: dict) -> Image:
+    box_size = options.get('box_size', 10)
+    return img.resize(
+        (img.size[0] // box_size, img.size[1] // box_size),
+        resample=ImageNamespace.BILINEAR
+    ).resize(
+        img.size,
+        ImageNamespace.NEAREST
+    )
+
+
+def action_warhol(img: Image, _: dict) -> Image:
+    img = img.convert('RGBA')
+    width, height = img.size
+    colors = ['red', 'green', 'blue', 'yellow']
+    new_img = ImageNamespace.new('RGBA', (width * 2, height * 2))
+    for i in range(2):
+        for j in range(2):
+            color = colors[i * 2 + j]
+            overlay = ImageNamespace.new('RGBA', (width, height), color)
+            new_img.paste(overlay, (i * width, j * height), overlay)
+            overlay = ImageNamespace.new('RGBA', (width, height), (0, 0, 0, 50))
+            new_img.paste(overlay, (i * width, j * height), overlay)
+    new_img.paste(img, (width // 2, height // 2), img)
+    return new_img.convert('RGB')
+
+
+def action_cartoonize(img: Image, options: dict) -> Image:
+    color_levels = int(options.get('color_levels', 6))
+    img = img.quantize(colors=color_levels).convert("RGB")
+    img = img.filter(ImageFilter.SMOOTH_MORE)
+    return img
+
+
 actions = {
     "sharpness": {
         "executor": action_sharpness,
@@ -101,5 +149,26 @@ actions = {
         "options": {
             "threshold": int,
         }
-    }
+    },
+    "emboss": {
+        "executor": action_emboss
+    },
+    "blur": {
+        "executor": action_blur,
+        "options": {"radius": int}
+    },
+    "edge_enhance": {
+        "executor": action_edge_enhance
+    },
+    "pixelate": {
+        "executor": action_pixelate,
+        "options": {"box_size": int}
+    },
+    "warhol": {
+        "executor": action_warhol
+    },
+    "cartoonize": {
+        "executor": action_cartoonize,
+        "options": {"color_levels": int}
+    },
 }
