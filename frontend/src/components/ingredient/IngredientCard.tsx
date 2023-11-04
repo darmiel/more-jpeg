@@ -1,5 +1,5 @@
 import ValueEdit from "@/components/ingredient/ValueEdit"
-import { IngredientMeta, Options } from "@/util/recipe"
+import { IngredientInfo, IngredientOptions } from "@/util/ingredients"
 import { Button, Checkbox, Tooltip } from "@nextui-org/react"
 import clsx from "clsx"
 import { useState } from "react"
@@ -15,11 +15,11 @@ export default function IngredientCard({
   onRemove,
 }: {
   name: string
-  meta: IngredientMeta
-  options?: Options
+  meta: IngredientInfo
+  options?: IngredientOptions
   enabled?: boolean
   setEnabled?: (enabled: boolean) => void
-  onOptionsUpdate?: (newOptions: Options) => void
+  onOptionsUpdate?: (newOptions: IngredientOptions) => void
   onRemove?: () => void
 }) {
   const [showOptions, setShowOptions] = useState(false)
@@ -92,7 +92,7 @@ export default function IngredientCard({
       {options && showOptions && onOptionsUpdate && (
         <div className="flex flex-wrap gap-2">
           {Object.entries(options).map(([name, value]) => {
-            const helpText = meta.param_info[name].description
+            const helpText = meta.parameters[name].description
             const paramStartContent = (
               <code className="flex items-center space-x-1 rounded-l-sm bg-neutral-700 px-2 py-1">
                 <span>{name}</span>

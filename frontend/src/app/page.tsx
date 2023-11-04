@@ -8,7 +8,8 @@ import PopoverAddIngredient from "@/components/modals/PopoverAddIngredient"
 import RecipeCard from "@/components/recipe/RecipeCard"
 import Warning from "@/components/ui/Warning"
 import { useSearch } from "@/context/SearchContext"
-import { Options, Recipe, ingredientMeta, recipes } from "@/util/recipe"
+import { IngredientOptions, ingredients } from "@/util/ingredients"
+import { Recipe, recipes } from "@/util/recipe"
 import {
   Button,
   Card,
@@ -380,7 +381,7 @@ export default function Home() {
             {selectedRecipe.ingredients.map((ingredient, index) => (
               <IngredientCard
                 key={index}
-                meta={ingredientMeta[ingredient.id]}
+                meta={ingredients[ingredient.id]}
                 name={ingredient.id}
                 enabled={!ingredient.disabled}
                 setEnabled={() => {
@@ -408,10 +409,10 @@ export default function Home() {
 
             <PopoverAddIngredient
               onAdd={(name, meta) => {
-                const options: Options = {}
-                meta.param_info &&
-                  Object.entries(meta.param_info).forEach(([name, info]) => {
-                    info.default && (options[name] = info.default)
+                const options: IngredientOptions = {}
+                meta.parameters &&
+                  Object.entries(meta.parameters).forEach(([name, info]) => {
+                    info.default !== undefined && (options[name] = info.default)
                   })
                 setSelectedRecipe((prev) => {
                   return {

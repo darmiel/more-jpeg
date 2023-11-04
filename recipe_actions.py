@@ -34,6 +34,22 @@ def action_exponential_noise(img: Image, options: dict) -> Image:
     return ImageNamespace.fromarray(image_array)
 
 
+def action_flip(img: Image, _: dict) -> Image:
+    return ImageOps.flip(img)
+
+
+def action_grayscale(img: Image, _: dict) -> Image:
+    return ImageOps.grayscale(img)
+
+
+def action_mirror(img: Image, _: dict) -> Image:
+    return ImageOps.mirror(img)
+
+
+def action_solarize(img: Image, options: dict) -> Image:
+    return ImageOps.solarize(img, int(clamp(options.get('threshold', 128), 0, 255)))
+
+
 def action_shift(img: Image, options: dict) -> Image:
     shift_x = int(img.size[0] * options.get('shift_x', 0.3))
     shift_y = int(img.size[1] * options.get('shift_y', 0.0))
@@ -69,6 +85,21 @@ actions = {
         "options": {
             "shift_x": [float, int],
             "shift_y": [float, int]
+        }
+    },
+    "flip": {
+        "executor": action_flip,
+    },
+    "grayscale": {
+        "executor": action_grayscale,
+    },
+    "mirror": {
+        "executor": action_mirror,
+    },
+    "solarize": {
+        "executor": action_solarize,
+        "options": {
+            "threshold": int,
         }
     }
 }

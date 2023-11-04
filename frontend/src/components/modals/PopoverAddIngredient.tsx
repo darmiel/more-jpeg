@@ -1,5 +1,5 @@
 import IngredientCard from "@/components/ingredient/IngredientCard"
-import { IngredientMeta, ingredientMeta } from "@/util/recipe"
+import { IngredientInfo, ingredients } from "@/util/ingredients"
 import {
   Button,
   Input,
@@ -14,7 +14,7 @@ import { FaMagnifyingGlass, FaPlus } from "react-icons/fa6"
 export default function PopoverAddIngredient({
   onAdd,
 }: {
-  onAdd: (ingredient_name: string, ingredient_meta: IngredientMeta) => void
+  onAdd: (ingredient_name: string, ingredient_meta: IngredientInfo) => void
 }) {
   const [search, setSearch] = useState("")
 
@@ -36,7 +36,7 @@ export default function PopoverAddIngredient({
         />
 
         <ScrollShadow className="mt-4 flex max-h-80 flex-col space-y-2">
-          {Object.entries(ingredientMeta)
+          {Object.entries(ingredients)
             .filter(
               ([name]) =>
                 !search || name.toLowerCase().includes(search.toLowerCase()),
