@@ -1,3 +1,4 @@
+import { getColorForQuality } from "@/util/quality"
 import { Recipe } from "@/util/recipe"
 import { Card, CardFooter, Image, Progress, Tooltip } from "@nextui-org/react"
 import clsx from "clsx"
@@ -11,12 +12,7 @@ export default function RecipeCard({
   isSelected?: boolean
   onSelect?: (recipe: Recipe) => void
 }) {
-  const destroyFactorColor =
-    recipe.destroy_factor >= 75
-      ? "danger"
-      : recipe.destroy_factor >= 50
-      ? "warning"
-      : "primary"
+  const destroyFactorColor = getColorForQuality(100 - recipe.destroy_factor)
   return (
     <Card
       isPressable

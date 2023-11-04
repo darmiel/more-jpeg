@@ -10,19 +10,26 @@ import Warning from "@/components/ui/Warning"
 import { useSearch } from "@/context/SearchContext"
 import { IngredientOptions, ingredients } from "@/util/ingredients"
 import { Recipe, recipes } from "@/util/recipe"
+import { WatermarkOptions } from "@/util/types"
 import {
+  Accordion,
+  AccordionItem,
   Button,
   Card,
   CardBody,
   Checkbox,
   Chip,
+  Input,
   Link,
   Modal,
   ModalContent,
+  ScrollShadow,
+  Slider,
   Tooltip,
 } from "@nextui-org/react"
 import clsx from "clsx"
 import { SetStateAction, useRef, useState } from "react"
+import { SliderPicker } from "react-color"
 import {
   ReactCompareSlider,
   ReactCompareSliderImage,
@@ -39,6 +46,7 @@ import {
   FaFile,
   FaFileExport,
   FaFileImport,
+  FaGear,
   FaRecycle,
   FaStar,
   FaUtensils,
@@ -76,9 +84,13 @@ export default function Home() {
   const [modalExportOpen, setModalExportOpen] = useState(false)
 
   // Watermark
-  const [enableWatermark, setEnableWatermark] = useState(true)
+  const [watermarkText, setWatermarkText] = useState("jpeg.qwer.tz")
+  const [watermarkTextColor, setWatermarkTextColor] = useState("#facc15")
+  const [watermarkBackgroundColor, setWatermarkBackgroundColor] =
+    useState("#ff0000")
   const [enableRandomWatermarkPosition, setEnableRandomWatermarkPosition] =
     useState(true)
+  const [watermarkSize, setWatermarkSize] = useState(18)
 
   // Bake
   const [sourcePreview, setSourcePreview] = useState("")
@@ -117,7 +129,16 @@ export default function Home() {
     )
     // send request to backend
     const data = new FormData()
-    data.append("watermark", enableWatermark ? "on" : "off")
+    data.append(
+      "watermark",
+      JSON.stringify({
+        text: watermarkText,
+        size: watermarkSize,
+        foregroundColor: watermarkTextColor,
+        backgroundColor: watermarkBackgroundColor,
+        randomizePosition: enableRandomWatermarkPosition,
+      } as WatermarkOptions),
+    )
     data.append("randomize", enableRandomWatermarkPosition ? "on" : "off")
     data.append("quality", selectedRecipe.quality.toString())
     data.append("ingredients", JSON.stringify(ingredients))
@@ -366,8 +387,9 @@ export default function Home() {
               </Modal>
             </div>
           </div>
-          <section className="w-full space-y-2">
+          <section className="w-full space-y-3">
             <QualityCard
+              key={selectedRecipe.name + "-" + selectedRecipe.quality}
               quality={selectedRecipe.quality}
               updateQuality={(quality) => {
                 setSelectedRecipe((prev) => {
@@ -378,34 +400,39 @@ export default function Home() {
                 })
               }}
             />
-            {selectedRecipe.ingredients.map((ingredient, index) => (
-              <IngredientCard
-                key={index}
-                meta={ingredients[ingredient.id]}
-                name={ingredient.id}
-                enabled={!ingredient.disabled}
-                setEnabled={() => {
-                  ingredient.disabled = !ingredient.disabled
-                  setSelectedRecipe(deepCopy(selectedRecipe))
-                }}
-                onOptionsUpdate={(options) => {
-                  ingredient.with = options
-                  setSelectedRecipe(deepCopy(selectedRecipe))
-                }}
-                onRemove={() => {
-                  // remove by index
-                  setSelectedRecipe((prev) => {
-                    return {
-                      ...prev,
-                      ingredients: prev.ingredients.filter(
-                        (_, i) => i !== index,
-                      ),
-                    }
-                  })
-                }}
-                options={ingredient.with}
-              />
-            ))}
+
+            <hr className="border-neutral-800" />
+
+            <ScrollShadow className="flex max-h-96 flex-col space-y-2">
+              {selectedRecipe.ingredients.map((ingredient, index) => (
+                <IngredientCard
+                  key={index}
+                  meta={ingredients[ingredient.id]}
+                  name={ingredient.id}
+                  enabled={!ingredient.disabled}
+                  setEnabled={() => {
+                    ingredient.disabled = !ingredient.disabled
+                    setSelectedRecipe(deepCopy(selectedRecipe))
+                  }}
+                  onOptionsUpdate={(options) => {
+                    ingredient.with = options
+                    setSelectedRecipe(deepCopy(selectedRecipe))
+                  }}
+                  onRemove={() => {
+                    // remove by index
+                    setSelectedRecipe((prev) => {
+                      return {
+                        ...prev,
+                        ingredients: prev.ingredients.filter(
+                          (_, i) => i !== index,
+                        ),
+                      }
+                    })
+                  }}
+                  options={ingredient.with}
+                />
+              ))}
+            </ScrollShadow>
 
             <PopoverAddIngredient
               onAdd={(name, meta) => {
@@ -430,7 +457,9 @@ export default function Home() {
               }}
             />
 
-            <div className="rounded-lg border border-dashed border-neutral-600 p-2">
+            <hr className="border-neutral-800" />
+
+            <section>
               <div className="flex items-center space-x-2">
                 <Button
                   fullWidth
@@ -456,22 +485,117 @@ export default function Home() {
                   />
                 </Tooltip>
               </div>
-              <div className="mt-2 flex space-x-2">
-                <Checkbox
-                  isSelected={enableWatermark}
-                  onValueChange={setEnableWatermark}
+              <Accordion>
+                <AccordionItem
+                  title={
+                    <div className="flex justify-between">
+                      <span>Watermark Settings</span>
+                      <Checkbox
+                        isDisabled
+                        isSelected={!!watermarkText}
+                        size="sm"
+                      />
+                    </div>
+                  }
+                  startContent={<FaGear />}
+                  isCompact
                 >
-                  Watermark
-                </Checkbox>
-                <Checkbox
-                  isSelected={enableRandomWatermarkPosition}
-                  onValueChange={setEnableRandomWatermarkPosition}
-                  isDisabled={!enableWatermark}
-                >
-                  Random Position
-                </Checkbox>
-              </div>
-            </div>
+                  <section className="flex flex-col space-y-3">
+                    {watermarkText ? (
+                      <span
+                        className="w-full rounded-md border border-transparent p-2 text-center font-semibold"
+                        style={{
+                          backgroundColor: watermarkBackgroundColor,
+                          color: watermarkTextColor,
+                        }}
+                      >
+                        {watermarkText}
+                      </span>
+                    ) : (
+                      <span className="w-full rounded-md border border-dashed border-neutral-600 p-2 text-center">
+                        No Watermark
+                      </span>
+                    )}
+                    <Input
+                      type="text"
+                      label="Watermark Text"
+                      description="Leave empty to disable watermark"
+                      defaultValue="jpeg.qwer.tz"
+                      variant="bordered"
+                      size="sm"
+                      value={watermarkText}
+                      onValueChange={setWatermarkText}
+                    />
+
+                    <Slider
+                      minValue={4}
+                      maxValue={64}
+                      value={watermarkSize}
+                      onChange={(newSize) =>
+                        setWatermarkSize(newSize as number)
+                      }
+                      step={1}
+                      size="sm"
+                      label="Watermark Size"
+                      getValue={(val) => `${val}pt`}
+                      color="foreground"
+                    />
+
+                    <div
+                      className="space-y-2 rounded-md border bg-neutral-800 px-3 pb-3 pt-2"
+                      style={{
+                        borderColor: watermarkTextColor,
+                      }}
+                    >
+                      <strong
+                        style={{
+                          color: watermarkTextColor,
+                        }}
+                      >
+                        Foreground
+                      </strong>
+                      <SliderPicker
+                        color={watermarkTextColor}
+                        onChange={(newColor) =>
+                          setWatermarkTextColor(newColor.hex)
+                        }
+                        onChangeComplete={() => autoBake && bake()}
+                      />
+                    </div>
+
+                    <div
+                      className="space-y-2 rounded-md border bg-neutral-800 px-3 pb-3 pt-2"
+                      style={{
+                        borderColor: watermarkBackgroundColor,
+                      }}
+                    >
+                      <strong
+                        style={{
+                          color: watermarkBackgroundColor,
+                        }}
+                      >
+                        Background
+                      </strong>
+                      <SliderPicker
+                        color={watermarkBackgroundColor}
+                        onChange={(newColor) =>
+                          setWatermarkBackgroundColor(newColor.hex)
+                        }
+                        onChangeComplete={() => autoBake && bake()}
+                      />
+                    </div>
+                    <Checkbox
+                      isSelected={enableRandomWatermarkPosition}
+                      onValueChange={setEnableRandomWatermarkPosition}
+                      isDisabled={!watermarkText}
+                    >
+                      Random Position
+                    </Checkbox>
+                  </section>
+                </AccordionItem>
+              </Accordion>
+              <div className="mt-2 flex space-x-2"></div>
+            </section>
           </section>
         </div>
       </section>
