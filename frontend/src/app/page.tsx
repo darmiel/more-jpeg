@@ -185,8 +185,8 @@ export default function Home() {
                 <Tooltip content="Hide Preview">
                   <Button
                     isIconOnly
-                    startContent={hideBakePreview ? <FaEyeSlash /> : <FaEye />}
-                    variant={hideBakePreview ? "bordered" : "solid"}
+                    startContent={hideBakePreview ? <FaEye /> : <FaEyeSlash />}
+                    variant={hideBakePreview ? "solid" : "bordered"}
                     size="sm"
                     onClick={() => setHideBakePreview((prev) => !prev)}
                   />
