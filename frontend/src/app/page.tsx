@@ -369,6 +369,7 @@ export default function Home() {
                 <ModalImport
                   onImport={(newRecipe) => {
                     setSelectedRecipe(deepCopy(newRecipe))
+                    recipes.push(newRecipe)
                   }}
                 />
               </Modal>
