@@ -73,6 +73,8 @@ def upload():
             img = run_action(ingredient.identifier, ingredient.options, img)
         except Exception as exception:
             return abort(400, exception)
+        if img.mode != "RGB":
+            img = img.convert("RGB")
 
     # add watermark (if enabled)
     img = watermark.paint(img)
